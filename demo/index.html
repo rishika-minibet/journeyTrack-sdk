@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>JourneyTrack SDK demo</title>
+    <link rel="icon" href="data:," />
+  </head>
+  <body>
+    <h1>JourneyTrack SDK demo</h1>
+    <p>Open DevTools → Console to see page events.</p>
+    <p>Current path: <code id="path"></code></p>
+
+    <p>
+      <button data-path="/home">pushState → /home</button>
+      <button data-path="/games">pushState → /games</button>
+      <button data-path="/profile">pushState → /profile</button>
+    </p>
+    <p>
+      <button id="replace">replaceState → /games?tab=new</button>
+      <button id="plain">Button that does not navigate</button>
+    </p>
+
+    <script type="module">
+      import { createAnalytics } from "/dist/index.js";
+
+      const analytics = createAnalytics();
+      analytics.init();
+
+      // Everything below is the "app", not the SDK: a tiny fake router.
+      const showPath = () => {
+        document.getElementById("path").textContent = location.pathname + location.search;
+      };
+      showPath();
+
+      for (const button of document.querySelectorAll("[data-path]")) {
+        button.addEventListener("click", () => {
+          history.pushState({}, "", button.dataset.path);
+          showPath();
+        });
+      }
+      document.getElementById("replace").addEventListener("click", () => {
+        history.replaceState({}, "", "/games?tab=new");
+        showPath();
+      });
+      window.addEventListener("popstate", showPath);
+    </script>
+  </body>
+</html>
